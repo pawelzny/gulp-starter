@@ -1,0 +1,7 @@
+/.vscode
+/.idea
+
+public/dist/js/*
+public/dist/css/*
+/node_modules
+*.log
