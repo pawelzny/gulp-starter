@@ -10,59 +10,36 @@ npm install && npm install -g gulp
 # Prepare directories and paths
 Open gulpfile.js and edit lines from 15 to 21
 ```javascript
-dirSrc = './src/', // your source directory
-dirDist = './public/dist/', // your distribution directory with compiled files
-dirTemplate = './', // your template directory
-pathLayoutMaster = dirTemplate + 'index.html', // path to your master layout file where assets are linked
+dirStatic = './templates/static', // all static files
+dirSrc = dirSatic + './src/', // your source directory
+dirDist = dirStatic, // compiled static directory
 
-jsToCompile = ['**/*.js'], // array of JS files which have to be compiled
-scssToCompile = ['scss/*.scss']; // array of SCSS files which have to be compiled
+jsVendorsToCompile = ['js/vendor/*.js'], // 3rd party scripts
+jsToCompile = ['**/*.js'], // your scripts
+
+scssVendorsToCompile = ['scss/vendor/*.css'], // 3rd party styles
+scssToCompile = ['scss/*.scss']; // your styles
 ```
 
-# Build assets
-with NPM
-```
-npm run build
-```
-or with Gulp
-```
-gulp
-```
+
 # watch with browser sync
-with NPM
 ```
-npm run watch
-```
-or with Gulp
-```
-gulp watch
+gulp watch // only watch
+gulp watch:sync // with browsersync on localhost:3000
+gulp watch:sync --host myhost.local:8000 // with your specific host
 ```
 # Other commands
-Build JS and update timestamps
-```
-gulp build-js
-```
-Build CSS and update timestamp
-```
-gulp build-css
-```
-Update timestamps in master layout
-```
-gulp build-timestamp
-```
 Compile JS
-```
-gulp compile-js
-```
+```gulp compile:js```
+
 Compile SCSS
-```
-gulp compile-scss
-```
+```gulp compile:scss```
+
 Watch JS without browser sync
-```
-gulp watch-js
-```
+```gulp watch:js```
+
 Watch SCSS without browser sync
-```
-gulp watch-scss
-```
+```gulp watch:scss```
+
+Default (compile:js and compile:scss):
+```gulp```

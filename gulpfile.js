@@ -1,126 +1,114 @@
 'use strict';
-
-var gulp = require('gulp'),
+const
+    gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
     concat = require('gulp-concat'),
-    htmlReplace = require('gulp-html-replace'),
-    notify = require('gulp-notify'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
     browserSync = require('browser-sync').create(),
     uglify = require('gulp-uglify'),
-    watch = require('gulp-watch'),
-    timestamp = Date.now(),
+    uglifycss = require('gulp-uglifycss'),
 
-    dirSrc = './src/', // your source directory
-    dirDist = './public/dist/', // your distribution directory with compiled files
-    dirTemplate = './', // your public directory
-    pathLayoutMaster = dirTemplate + 'index.html', // path to your master layout file where assets are linked
+    dirStatic = './templates/static/',
+    dirSrc = dirStatic + 'src/',
+    dirDist = dirStatic,
 
-    jsToCompile = ['**/*.js'], // array of JS files which have to be compiled
-    scssToCompile = ['scss/*.scss']; // array of SCSS files which have to be compiled
+    jsVendorsToCompile = ['js/vendor/*.js'],
+    jsToCompile = [
+        'js/lib.js',
+        'js/scripts.js'
+    ],
+    cssVendorsToCompile = [
+        'scss/vendor/bootstrap.min.css',
+        'scss/vendor/animate.css',
+        'scss/vendor/style.css',
+        'scss/vendor/font-awesome.min.css'
+    ],
+    scssToCompile = ['scss/styles.scss'];
 
+function dirConcat (value) {
+    return dirSrc + value;
+}
 
 /******************************* BUILD ALL *******************************/
-gulp.task('default', ['build-js', 'build-css', 'build-timestamp']);
+gulp.task('default', ['compile:js', 'compile:scss'], function () {
+    console.log('build process completed');
+});
 
+gulp.task('compile:js', function () {
+    let
+        vendors = jsVendorsToCompile.map(dirConcat),
+        toCompile = jsToCompile.map(dirConcat),
+        destination = dirDist + 'js/';
 
-/****************************** COMPILE ******************************/
-gulp.task('compile-js', function () {
-
-    var toCompile = jsToCompile.map(function (value) {
-        return dirSrc + value;
-    });
-
-    console.log('JavaScripts to compile: ', toCompile);
+    gulp.src(vendors)
+        .pipe(concat('vendor.js'), {newLine: ';'})
+        .pipe(uglify()).on('error', console.log)
+        .pipe(gulp.dest(destination));
 
     gulp.src(toCompile)
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(concat('main.js'), {newLine: ';'})
-        .pipe(uglify())
+        .pipe(uglify()).on('error', console.log)
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(dirDist + 'js/'))
+        .pipe(gulp.dest(destination))
         .pipe(browserSync.stream());
 });
 
+gulp.task('compile:scss', function () {
+    let
+        vendors = cssVendorsToCompile.map(dirConcat),
+        toCompile = scssToCompile.map(dirConcat),
+        destination = dirDist + 'css/';
 
-gulp.task('compile-scss', function () {
-
-    var toCompile = scssToCompile.map(function (value) {
-        return dirSrc + value;
-    });
-
-    console.log('SCSS to compile: ', toCompile);
+    gulp.src(vendors)
+        .pipe(concat('vendor.css'))
+        .pipe(uglifycss({"uglyComments": true}))
+        .pipe(gulp.dest(destination));
 
     gulp.src(toCompile)
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+        //.pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
         .pipe(autoprefixer({
 			browsers: ['last 2 versions'],
 			cascade: false
 		}))
+        .pipe(uglifycss())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(dirDist + 'css/'))
+        .pipe(gulp.dest(destination))
         .pipe(browserSync.stream());
 });
 
-
-/***************************** BUILD *****************************/
-gulp.task('build-js', ['compile-js', 'build-timestamp'], function () {
-
-    console.log('JavaScript has been built successfully');
-});
-
-gulp.task('build-css', ['compile-scss', 'build-timestamp'], function () {
-
-    console.log('CSS has been built successfully');
-});
-
-
 /****************************** WATCH ******************************/
-gulp.task('watch-js', function () {
-
-    gulp.watch(dirSrc + '**/*.js', ['compile-js']);
+gulp.task('watch:js', ['compile:js'], function () {
+    gulp.watch(dirSrc + '**/*.js', ['compile:js'], function () {
+        //
+    });
 });
 
-gulp.task('watch-scss', function () {
-
-    gulp.watch(dirSrc + 'scss/*.scss', ['compile-scss']);
+gulp.task('watch:scss', ['compile:scss'], function () {
+    gulp.watch(dirSrc + 'scss/**/*.scss', ['compile:scss'], function () {
+        //
+    });
 });
 
-gulp.task('watch', ['watch-js', 'watch-scss'], function () {
+gulp.task('watch', ['watch:js', 'watch:scss']);
+gulp.task('watch:sync', ['watch:js', 'watch:scss'], function () {
+    let
+        defaultProxyTarget = "localhost:3000",
+        proxyTarget = process.argv[4] || defaultProxyTarget;
 
     browserSync.init({
-        files: [
-            dirTemplate + '*',
-            dirSrc + '*'
-        ],
-        server: {
-            baseDir: './'
-        },
-        notify: false
+        files: [dirDist + '*'],
+        notify: false,
+        proxy: {target: proxyTarget}
     });
 
     browserSync.reload();
-});
 
-
-/************************* VERSION TIMESTAMP *************************/
-gulp.task('build-timestamp', function () {
-
-    gulp.src(pathLayoutMaster)
-    .pipe(htmlReplace({
-        css: {
-            src: timestamp,
-            tpl: '<link rel="stylesheet" href="public/dist/css/index.css?v=%s" class="style">' // your minified css file link
-        },
-        js: {
-            src: timestamp,
-            tpl: '<script src="public/dist/js/main.js?v=%s"></script>' // your minified JS file link
-        }
-    }, {
-        keepUnassigned: true,
-        keepBlockTags: true
-    }))
-    .pipe(gulp.dest(dirTemplate));
+    if (proxyTarget === defaultProxyTarget) {
+        console.warn('Try to run watch with your --host parameter:');
+        console.warn('gulp watch:sync --host 192.168.0.154:8000');
+    }
 });

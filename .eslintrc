@@ -1,4 +1,13 @@
 {
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "amd": true,
+        "es6": true,
+        "node": true,
+        "jquery": true
+    },
+    "extends": "eslint:recommended",
     "rules": {
         "semi": ["error", "always"],
         "no-extra-semi": ["error"],
@@ -70,7 +79,6 @@
         "no-label-var": ["error"],
         "no-undefined": ["error"],
         "no-unused-vars": ["warn", {
-            "vars": "local",
             "args": "after-used"
         }],
         "array-bracket-spacing": ["warn", "never"],
@@ -79,7 +87,7 @@
             "allowSingleLine": true
         }],
         "camelcase": ["warn", {
-            "properties": "always"
+            "properties": "never"
         }],
         "comma-spacing": ["warn", {
             "before": false,
@@ -88,7 +96,7 @@
         "comma-style": ["warn", "last"],
         "computed-property-spacing": ["error", "never"],
         "eol-last": ["error"],
-        "id-blacklist": ["warn", "err", "e", "cb", "res", "req"],
+        "id-blacklist": ["warn", "e", "cb"],
         "key-spacing": ["warn", {
             "beforeColon": false,
             "afterColon": true
@@ -102,7 +110,6 @@
         "new-cap": ["warn"],
         "new-parens": ["error"],
         "newline-after-var": ["warn", "always"],
-        "newline-before-return": ["warn"],
         "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
         "no-multiple-empty-lines": ["error", {
             "max": 2
@@ -125,19 +132,31 @@
                 ":": "ignore"
             }
         }],
-        "require-jsdoc": ["warn", {
-            "require": {
-                "FunctionDeclaration": true,
-                "MethodDefinition": true,
-                "ClassDeclaration": false
-            }
-        }],
         "semi-spacing": ["error", {
             "before": false,
             "after": true
         }],
         "space-before-blocks": ["warn", "always"],
         "space-before-function-paren": ["warn", "always"],
-        "space-in-parens": ["error", "never"]
+        "space-in-parens": ["error", "never"],
+        "arrow-parens": ["warn", "always"],
+        "arrow-spacing": ["warn", {
+            "before": true,
+            "after": true
+        }],
+        "no-class-assign": ["error"],
+        "no-confusing-arrow": ["warn", {
+            "allowParens": true
+        }],
+        "no-const-assign": ["error"],
+        "no-dupe-class-members": ["error"],
+        "no-duplicate-imports": ["warn", {
+            "includeExports": true
+        }],
+        "no-new-symbol": ["error"],
+        "no-this-before-super": ["error"],
+        "no-console": ["error", {
+            "allow": ["log", "warn", "error"]
+        }]
     }
 }
