@@ -10,7 +10,7 @@ npm install && npm install -g gulp
 # Prepare directories and paths
 Open gulpfile.js and edit lines from 15 to 21
 ```javascript
-dirStatic = './templates/static', // all static files
+dirStatic = './static', // all static files
 dirSrc = dirSatic + './src/', // your source directory
 dirDist = dirStatic, // compiled static directory
 

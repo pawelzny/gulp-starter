@@ -8,8 +8,9 @@ const
     browserSync = require('browser-sync').create(),
     uglify = require('gulp-uglify'),
     uglifycss = require('gulp-uglifycss'),
+    babel = require('gulp-babel'),
 
-    dirStatic = './templates/static/',
+    dirStatic = './static/',
     dirSrc = dirStatic + 'src/',
     dirDist = dirStatic,
 
@@ -48,6 +49,9 @@ gulp.task('compile:js', function () {
 
     gulp.src(toCompile)
         .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         .pipe(concat('main.js'), {newLine: ';'})
         .pipe(uglify()).on('error', console.log)
         .pipe(sourcemaps.write('.'))
