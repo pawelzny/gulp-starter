@@ -1,7 +1,5 @@
 /.vscode
 /.idea
-
-public/dist/js/*
-public/dist/css/*
+jsconfig.json
 /node_modules
 *.log
