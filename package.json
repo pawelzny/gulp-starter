@@ -1,12 +1,11 @@
 {
   "name": "gulp_starter",
-  "version": "1.0.0",
-  "description": "Gulp easy starter for frontend workflow",
+  "version": "1.1.0",
+  "description": "Gulp starter for frontend workflow",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node_modules/.bin/gulp",
-    "watch": "node_modules/.bin/gulp watch"
+    "gulp": "gulp"
   },
   "keywords": [
     "gulp",
@@ -14,7 +13,7 @@
     "frontend",
     "workflow"
   ],
-  "author": "Pawelzny",
+  "author": "Paweł Zadrożny <pawel.zny@gmail.com> (https://pawelzny.com)",
   "license": "MIT",
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
@@ -31,5 +30,6 @@
     "gulp-uglify": "^2.0.0",
     "gulp-uglifycss": "^1.0.6",
     "gulp-watch": "^4.3.5"
-  }
+  },
+  "private": true
 }

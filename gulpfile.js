@@ -16,16 +16,8 @@ const
     dirDist = dirStatic,
 
     jsVendorsToCompile = ['js/vendor/*.js'],
-    jsToCompile = [
-        'js/lib.js',
-        'js/scripts.js'
-    ],
-    cssVendorsToCompile = [
-        'scss/vendor/bootstrap.min.css',
-        'scss/vendor/animate.css',
-        'scss/vendor/style.css',
-        'scss/vendor/font-awesome.min.css'
-    ],
+    jsToCompile = ['js/*.js'],
+    cssVendorsToCompile = ['scss/vendor/*.css'],
     scssToCompile = ['scss/styles.scss'];
 
 function dirConcat(value) {
