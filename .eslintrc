@@ -124,7 +124,6 @@
         }],
         "no-unneeded-ternary": ["error"],
         "no-whitespace-before-property": ["error"],
-        "object-curly-spacing": ["warn", "never"],
         "one-var-declaration-per-line": ["warn", "always"],
         "operator-linebreak": ["warn", "before", {
             "overrides": {
@@ -137,7 +136,6 @@
             "after": true
         }],
         "space-before-blocks": ["warn", "always"],
-        "space-before-function-paren": ["warn", "always"],
         "space-in-parens": ["error", "never"],
         "arrow-parens": ["warn", "always"],
         "arrow-spacing": ["warn", {

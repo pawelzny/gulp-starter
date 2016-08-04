@@ -9,6 +9,7 @@ const
     uglify = require('gulp-uglify'),
     uglifycss = require('gulp-uglifycss'),
     babel = require('gulp-babel'),
+    notify = require('gulp-notify'),
 
     dirStatic = './static/',
     dirSrc = dirStatic + 'src/',
@@ -27,15 +28,15 @@ const
     ],
     scssToCompile = ['scss/styles.scss'];
 
-function dirConcat (value) {
+function dirConcat(value) {
     return dirSrc + value;
 }
 
-/******************************* BUILD ALL *******************************/
 gulp.task('default', ['compile:js', 'compile:scss'], function () {
     console.log('build process completed');
 });
 
+/****************************** COMPILING TASKS ******************************/
 gulp.task('compile:js', function () {
     let
         vendors = jsVendorsToCompile.map(dirConcat),
@@ -43,20 +44,30 @@ gulp.task('compile:js', function () {
         destination = dirDist + 'js/';
 
     gulp.src(vendors)
-        .pipe(concat('vendor.js'), {newLine: ';'})
-        .pipe(uglify()).on('error', console.log)
-        .pipe(gulp.dest(destination));
+        .pipe(concat('vendor.js'), { newLine: ';' })
+        .pipe(uglify()).on('error', notify.onError)
+        .pipe(gulp.dest(destination))
+        .pipe(notify({
+            onLast: true,
+            message: "Vendor JavaScripts Compiled!"
+        }))
+        .on("error", notify.onError("Error: <%= error.message %>"));
 
     gulp.src(toCompile)
-        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(concat('main.js'), {newLine: ';'})
-        .pipe(uglify()).on('error', console.log)
+        .pipe(concat('main.js'), { newLine: ';' })
+        .pipe(uglify()).on('error', notify.onError)
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(destination))
-        .pipe(browserSync.stream());
+        .pipe(browserSync.stream())
+        .pipe(notify({
+            onLast: true,
+            message: "Native JavaScripts Compiled!"
+        }))
+        .on("error", notify.onError("Error: <%= error.message %>"));
 });
 
 gulp.task('compile:scss', function () {
@@ -67,34 +78,41 @@ gulp.task('compile:scss', function () {
 
     gulp.src(vendors)
         .pipe(concat('vendor.css'))
-        .pipe(uglifycss({"uglyComments": true}))
-        .pipe(gulp.dest(destination));
+        .pipe(uglifycss({ "uglyComments": true }))
+        .pipe(gulp.dest(destination))
+        .pipe(notify({
+            onLast: true,
+            message: "Vendor CSS Concatenated!"
+        }))
+        .on("error", notify.onError("Error: <%= error.message %>"));
 
     gulp.src(toCompile)
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-        //.pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({
-			browsers: ['last 2 versions'],
-			cascade: false
-		}))
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
         .pipe(uglifycss())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(destination))
-        .pipe(browserSync.stream());
+        .pipe(browserSync.stream())
+        .pipe(notify({
+            onLast: true,
+            message: "Native SCSS Compiled!"
+        }))
+        .on("error", notify.onError("Error: <%= error.message %>"));
 });
 
-/****************************** WATCH ******************************/
+/******************************** WATCH TASKS ********************************/
 gulp.task('watch:js', ['compile:js'], function () {
-    gulp.watch(dirSrc + '**/*.js', ['compile:js'], function () {
-        //
-    });
+    notify("Watching JavaScript for changes").write('');
+    gulp.watch(dirSrc + '**/*.js', ['compile:js']);
 });
 
 gulp.task('watch:scss', ['compile:scss'], function () {
-    gulp.watch(dirSrc + 'scss/**/*.scss', ['compile:scss'], function () {
-        //
-    });
+    notify("Watching SCSS for changes").write('');
+    gulp.watch(dirSrc + 'scss/**/*.scss', ['compile:scss']);
 });
 
 gulp.task('watch', ['watch:js', 'watch:scss']);
@@ -103,10 +121,12 @@ gulp.task('watch:sync', ['watch:js', 'watch:scss'], function () {
         defaultProxyTarget = "localhost:3000",
         proxyTarget = process.argv[4] || defaultProxyTarget;
 
+    notify("Watching SCSS for changes").write('');
+
     browserSync.init({
-        files: [dirDist + '*'],
+        files: [dirDist + '**/*'],
         notify: false,
-        proxy: {target: proxyTarget}
+        proxy: { target: proxyTarget }
     });
 
     browserSync.reload();
