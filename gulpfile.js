@@ -36,6 +36,10 @@ gulp.task('compile:js', function () {
         destination = dirDist + 'js/';
 
     gulp.src(vendors)
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         .pipe(concat('vendor.js'), { newLine: ';' })
         .pipe(uglify()).on('error', notify.onError)
         .pipe(gulp.dest(destination))
