@@ -1,34 +1,36 @@
 'use strict';
 const
+    browserSync = require('browser-sync').create(),
     gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
+    babel = require('gulp-babel'),
+    change = require('gulp-change'),
     concat = require('gulp-concat'),
+    notify = require('gulp-notify'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
-    browserSync = require('browser-sync').create(),
     uglify = require('gulp-uglify'),
     uglifycss = require('gulp-uglifycss'),
-    babel = require('gulp-babel'),
-    notify = require('gulp-notify'),
 
-    dirStatic = './static/',
-    dirSrc = dirStatic + 'src/',
-    dirDist = dirStatic,
+    // Directories for static files
+    dirSrc = './src/',
+    dirStatic = dirSrc + 'static/',
+    dirDist = './public/wp-content/themes/custom/static/', // replace `custom` with currently used theme
 
+    // Static files resources
     jsVendorsToCompile = ['js/vendor/*.js'],
     jsToCompile = ['js/*.js'],
     cssVendorsToCompile = ['scss/vendor/*.css'],
     scssToCompile = ['scss/styles.scss'];
 
-function dirConcat(value) {
-    return dirSrc + value;
-}
+function dirConcat (value) { return dirStatic + value; }
 
-gulp.task('default', ['compile:js', 'compile:scss'], function () {
+/****************************** COMPILING TASKS ******************************/
+
+gulp.task('default', ['compile:js', 'compile:scss', 'timestamp'], function () {
     console.log('build process completed');
 });
 
-/****************************** COMPILING TASKS ******************************/
 gulp.task('compile:js', function () {
     let
         vendors = jsVendorsToCompile.map(dirConcat),
@@ -41,13 +43,13 @@ gulp.task('compile:js', function () {
             presets: ['es2015']
         }))
         .pipe(concat('vendor.js'), { newLine: ';' })
-        .pipe(uglify()).on('error', notify.onError)
+        .pipe(uglify()).on('error', console.error)
         .pipe(gulp.dest(destination))
         .pipe(notify({
             onLast: true,
             message: "Vendor JavaScripts Compiled!"
         }))
-        .on("error", notify.onError("Error: <%= error.message %>"));
+        .on("error", console.error);
 
     gulp.src(toCompile)
         .pipe(sourcemaps.init({ loadMaps: true }))
@@ -55,7 +57,7 @@ gulp.task('compile:js', function () {
             presets: ['es2015']
         }))
         .pipe(concat('main.js'), { newLine: ';' })
-        .pipe(uglify()).on('error', notify.onError)
+        .pipe(uglify()).on('error', console.error)
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(destination))
         .pipe(browserSync.stream())
@@ -63,7 +65,7 @@ gulp.task('compile:js', function () {
             onLast: true,
             message: "Native JavaScripts Compiled!"
         }))
-        .on("error", notify.onError("Error: <%= error.message %>"));
+        .on("error", console.error);
 });
 
 gulp.task('compile:scss', function () {
@@ -80,11 +82,11 @@ gulp.task('compile:scss', function () {
             onLast: true,
             message: "Vendor CSS Concatenated!"
         }))
-        .on("error", notify.onError("Error: <%= error.message %>"));
+        .on("error", console.error);
 
     gulp.src(toCompile)
         .pipe(sourcemaps.init({ loadMaps: true }))
-        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+        .pipe(sass({ outputStyle: 'compressed' }).on('error', console.error))
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
@@ -97,7 +99,18 @@ gulp.task('compile:scss', function () {
             onLast: true,
             message: "Native SCSS Compiled!"
         }))
-        .on("error", notify.onError("Error: <%= error.message %>"));
+        .on("error", console.error);
+});
+
+gulp.task('timestamp', function () {
+    var replacement = 'const BUILT_TIMESTAMP = ' + Date.now() + ';',
+        regex = /(.*)BUILT_TIMESTAMP(.*)/;
+
+    gulp.src(dirSrc + 'envs.php')
+        .pipe(change(function (content) {
+            return content.replace(regex, replacement);
+        }))
+        .pipe(gulp.dest(dirSrc));
 });
 
 /******************************** WATCH TASKS ********************************/

@@ -1,33 +1,40 @@
 # gulp-starter
 
-Gulp easy starter for frontend workflow
+Gulp starter for frontend workflow for any project.
 
-# install
+## Installing:
 
-Install all dependencies and gulp globally
+First install gulp and yarn globally `npm install -g gulp yarn`
+Then install all dev-dependencies for this gulpfile with command: `yarn`
+
+## Adding new dependencies:
+
+Instead of using npm package manager use previously installed `yarn`
+
+Add new dependency:
 
 ```
-npm install && npm install -g gulp
+yarn add --dev package_name
 ```
 
-# Prepare directories and paths
+## Prepare directories and paths:
 
-Open gulpfile.js and edit lines from 14 to 21
+Open gulpfile.js and edit lines from 16 to 24:
 
 ```javascript
-dirStatic = './static', // all static files
-dirSrc = dirSatic + './src/', // your source directory
-dirDist = dirStatic, // compiled static directory
+// Directories for static files
+dirSrc = './src/',
+dirStatic = dirSrc + 'static/',
+dirDist = './public/wp-content/themes/custom/static/', // replace dist path
 
-jsVendorsToCompile = ['js/vendor/*.js'], // 3rd party scripts
-jsToCompile = ['**/*.js'], // your scripts
-
-scssVendorsToCompile = ['scss/vendor/*.css'], // 3rd party styles
-scssToCompile = ['scss/*.scss']; // your styles
+// Static files resources
+jsVendorsToCompile = ['js/vendor/*.js'],
+jsToCompile = ['js/*.js'],
+cssVendorsToCompile = ['scss/vendor/*.css'],
+scssToCompile = ['scss/styles.scss'];
 ```
 
-
-# watch with browser sync
+## watch with browser sync:
 
 ```javascript
 gulp watch // only watch
@@ -35,42 +42,15 @@ gulp watch:sync // with browsersync on localhost:3000
 gulp watch:sync --host myhost.local:8000 // with your specific host
 ```
 
-# Other commands
+## Other commands:
 
-Compile JS
-
-```javascript
-gulp compile:js
-```
-
-Compile SCSS
-
-```javascript
-gulp compile:scss
-```
-
-Watch JS without browser sync
-
-```javascript
-gulp watch:js
-```
-
-Watch SCSS without browser sync
-
-```javascript
-gulp watch:scss
-```
-
-Default (compile:js and compile:scss):
-
-```javascript
-gulp
-```
+* Compile JS: `gulp compile:js`
+* Compile SCSS: `gulp compile:scss`
+* Watch JS without browser sync: `gulp watch:js`
+* Watch SCSS without browser sync: `gulp watch:scss`
+* Upgrade static files build timestamp: `gulp timestamp`
+* Default (compile:js and compile:scss): `gulp`
 
 # On production
 
-Access gulp with npm scripts
-
-```javascript
-npm run gulp [task]
-```
+Access gulp with npm scripts: `npm run gulp [task_name]` or `npm run gulp` for default action.

@@ -82,7 +82,6 @@
             "args": "after-used"
         }],
         "array-bracket-spacing": ["warn", "never"],
-        "block-spacing": ["warn", "never"],
         "brace-style": ["warn", "1tbs", {
             "allowSingleLine": true
         }],
@@ -136,6 +135,7 @@
             "after": true
         }],
         "space-before-blocks": ["warn", "always"],
+        "space-before-function-paren": ["warn", "always"],
         "space-in-parens": ["error", "never"],
         "arrow-parens": ["warn", "always"],
         "arrow-spacing": ["warn", {
